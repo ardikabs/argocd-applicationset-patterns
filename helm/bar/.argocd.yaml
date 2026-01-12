@@ -4,6 +4,8 @@ deployments:
   backend:
     devel:
       enabled: true
+      labels:
+        system.ardikabs.com/application: bar
       helm:
         valueFiles:
           - .values.devel.yaml
