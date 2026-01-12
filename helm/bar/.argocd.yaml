@@ -14,7 +14,8 @@ deployments:
 
     stg:
       enabled: true
-
+      labels:
+        system.ardikabs.com/application: bar
       helm:
         valueFiles:
           - .values.stg.yaml
