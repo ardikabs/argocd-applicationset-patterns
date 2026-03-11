@@ -1,0 +1,66 @@
+apiVersion: hibernator.ardikabs.com/v1alpha1
+kind: K8SCluster
+metadata:
+  name: local
+  namespace: hibernator-system
+spec:
+  k8s:
+    kubeconfigRef:
+      name: kubeconfig-local
+      namespace: hibernator-system
+---
+apiVersion: hibernator.ardikabs.com/v1alpha1
+kind: HibernatePlan
+metadata:
+  name: workloadscaler-test
+  namespace: hibernator-system
+spec:
+  behavior:
+    failFast: false
+    mode: Strict
+    retries: 2
+  execution:
+    strategy:
+      type: Sequential
+  schedule:
+    offHours:
+    - daysOfWeek:
+      - MON
+      - TUE
+      - WED
+      - THU
+      - FRI
+      - SAT
+      - SUN
+      end: "18:00"
+      start: "10:00"
+    timezone: Asia/Jakarta
+  targets:
+  - connectorRef:
+      kind: K8SCluster
+      name: local
+    name: k3d-local
+    parameters:
+      awaitCompletion:
+        enabled: true
+      namespace:
+        literals:
+        - default
+      workloadSelector:
+        matchLabels:
+          app: echoserver
+    type: workloadscaler
+  - connectorRef:
+      kind: K8SCluster
+      name: local
+    name: k3d-local-sandbox
+    parameters:
+      awaitCompletion:
+        enabled: true
+      namespace:
+        literals:
+        - default
+      workloadSelector:
+        matchLabels:
+          app: sandbox
+    type: workloadscaler
