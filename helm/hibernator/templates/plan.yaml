@@ -64,3 +64,42 @@ spec:
         matchLabels:
           app: sandbox
     type: workloadscaler
+---
+apiVersion: hibernator.ardikabs.com/v1alpha1
+kind: HibernatePlan
+metadata:
+  finalizers:
+  - hibernator.ardikabs.com/finalizer
+  name: dev-backend-offhour
+  namespace: hibernator-system
+spec:
+  behavior:
+    failFast: false
+    mode: Strict
+    retries: 2
+  execution:
+    strategy:
+      type: Sequential
+  schedule:
+    offHours:
+    - daysOfWeek:
+      - MON
+      - TUE
+      - WED
+      - THU
+      - FRI
+      end: "19:00"
+      start: "20:00"
+    timezone: Asia/Jakarta
+  targets:
+  - connectorRef:
+      kind: CloudProvider
+      name: aws-creds
+    name: ec2-remote-eks
+    parameters:
+      awaitCompletion:
+        enabled: true
+      selector:
+        tags:
+          service_name: temp-testing-vm
+    type: ec2
